@@ -14,8 +14,7 @@
 #  2. Write a function to plot neural responses related to various behaviors.
 #  3. Write a function to plot tuning curves.
 #
-#   There are many different methods which can be used here...
-#   This is the algorithm which I am going to used,
+
 #   
 
 #Helper code to import some functions we will use
