@@ -58,19 +58,16 @@ def bin_spikes(trials, spk_times, time_bin = 0.08):
     (in degrees from 0-360) and the second column containing the average firing rate
     for each direction
     """
-
-    # Group trials and their spike times into dictionary. 
-    dir_dict = { k : [ ] for k in np.unique(trials[:,0]) }
-    for i, j in trials: dir_dict[i].append(j)
-
-    dir_rates = { }
-    for angle in dir_dict.keys(): 
-        for trial in xrange(17):
-            spikes = np.logical_and( spk_times > dir_dict[angle][trial] - time_bin,
-                                     spk_times < dir_dict[angle][trial] + time_bin )
-            spk_avg = np.average(spikes)/(2*time_bin)
-            dir_rates[angle] = spk_avg
-    
+    directions = np.unique(trials[:,0])
+    dir_rates = np.zeros( (8, 2) ) # intialize an 8x2 array of zeros 
+    for direction in directions:
+        nmbr_trials = float(len(plt.find(trials[:,0]==direction)))
+        trial_times = [ t[1] for t in trials if t[0] == direction ]
+        nmbr_spks = 0.0
+        for time in trial_times:
+            nmbr_spks += len(np.where(np.logical_and(spk_times>time-time_bin,spk_times<time+time_bin))[0])
+        firing_rate = nmbr_spks/nmbr_trials/(2*time_bin)
+        dir_rates[plt.find(directions==direction)] = [direction, firing_rate] 
     return dir_rates
     
 
