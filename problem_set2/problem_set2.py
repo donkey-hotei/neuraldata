@@ -80,7 +80,29 @@ def plot_tuning_curves(direction_rates, title):
     (found in the two columns of direction_rates) and plots a histogram and 
     polar representation of the tuning curve. It adds the given title.
     """
-    return NotImplementedError
+        # yank columns and keep in correspondance 
+    directions = direction_rates[0:][:,0]
+    rates = direction_rates[0:][:,1]
+    # histogram plot 
+    plt.subplot(2, 2, 1)
+    plt.title('Histogram ' + title)
+    plt.axis([0, 360, 0, 70])
+    plt.xlim(-22.5,337.5)
+    plt.xlabel('Directions (in degrees)')
+    plt.ylabel('Average Firing Rate (in spikes/s)')
+    plt.bar(directions, rates, width=45, align='center')
+    plt.xticks(directions)
+    # polar plot 
+    plt.subplot(2,2,2,polar=True)
+    plt.title('Polar plot ' + title)
+    #plt.legend('Diring Rate (spikes/s)')
+    rates = np.append(rates, rates[0]) 
+    theta = np.arange(0,361,45)*np.pi/180
+    plt.polar(theta, rates)
+
+    plt.show()
+    # end plot_tuning_curves
+    return 0
     
 def roll_axes(direction_rates):
     """
@@ -90,6 +112,10 @@ def roll_axes(direction_rates):
     returned list should be set to be the same. (See problem set directions)
     Hint: Use np.roll()
     """
+   directions = direction_rates[0:][:,0]
+   rates = direction_rates[0:][:,0]
+   rates = np.append(rates, rates[0])
+   max_dir = directions[ plt.find(rates>=max(rates)) ]
    
     
     return new_xs, new_ys, roll_degrees    
