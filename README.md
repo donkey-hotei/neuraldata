@@ -1,5 +1,5 @@
 Solutions to Assignments from Brown's Exploring Neural Data course offered 
-over the Courserea platform. 
+over the Coursera platform. 
 This course is an opprotunity to learn about neuroscience research and 
 explore questions related to how brains work. It is an intoductory level
 course that help the student understand real-life challenges faced by 
