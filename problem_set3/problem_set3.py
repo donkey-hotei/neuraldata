@@ -1,3 +1,5 @@
+from math import sqrt 
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -31,7 +33,7 @@ def load_data(filename='problem_set3_data.npy'):
 ##
 ## This function should be edited as part of Exercise 1
 ##
-from math import sqrt
+
 def add_info(df):
     """Add additional information to our DataFrame including reaction time
     information and target eccentricity information."""
@@ -64,8 +66,7 @@ def add_info(df):
     #          You can use np.sum (or +), np.sqrt, and np.round here
 
     # df['targ_ecc'] = *** YOUR CODE_HERE ***
-    df['targ_ecc'] = np.array([ sqrt(float(x*x+y*y)) for x,y in zip(df['targ_x'],df['targ_y'])])
-
+    df['targ_ecc'] = np.array([ sqrt(float(x*x + y*y)) for x,y in zip(df['targ_x'], df['targ_y']) ])
 
 
     # Leave this here - it adds information used for Exercise 5
