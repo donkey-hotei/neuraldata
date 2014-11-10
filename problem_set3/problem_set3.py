@@ -1,8 +1,8 @@
-from math import sqrt 
-
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+
+from math import sqrt 
 
 ##
 ## This function should not be changed
@@ -28,12 +28,9 @@ def load_data(filename='problem_set3_data.npy'):
     df['targ_y'] = np.array([pos[1] for pos in data['targ_pos']])
     return df
 
-
-
 ##
 ## This function should be edited as part of Exercise 1
 ##
-
 def add_info(df):
     """Add additional information to our DataFrame including reaction time
     information and target eccentricity information."""
@@ -47,14 +44,11 @@ def add_info(df):
     # In the experiment, the stimulus appeared at 'stimon' and the response
     # was recorded at 'response' (both in msec) 
 
-    # Uncomment the following line and add the df['rts'] column 
+    # Uncomment the following line and  add the df['rts'] column 
     #   Hint: refer to df['stimon'] and df['response'] !!!
-
-    # df['rts'] = *** YOUR CODE HERE ***
+    df['rts'] = np.array([abs(stmls-rspns) 
+                for stmls,rspns in zip(df['stimon'],df['response'])])
     
-    # The response time is the absolute value of the difference between the stimiulus time and response time.
-    df['rts'] = np.array([ abs(s - r) for s,r in zip(df['stimon'], df['response'])])
-
     # b. Target Eccentricity
     # The target x,y position is specified by df['targ_x'] and df['targ_y']
     #
@@ -64,15 +58,12 @@ def add_info(df):
     #   Hints: You will need the pythagorean theorem: ecc = sqrt(x^2+y^2) 
     #          To square an array, you can multiply it by itself or do array**2
     #          You can use np.sum (or +), np.sqrt, and np.round here
-
-    # df['targ_ecc'] = *** YOUR CODE_HERE ***
-    df['targ_ecc'] = np.array([ sqrt(float(x*x + y*y)) for x,y in zip(df['targ_x'], df['targ_y']) ])
-
+    df['targ_ecc'] = np.round(np.sqrt(df['targ_x']*df['targ_x'] + \
+                                      df['targ_y']*df['targ_y']))
 
     # Leave this here - it adds information used for Exercise 5
     add_acq_time(df)
-    
-    return df
+    return df 
 
 ##
 ## This function should be edited as part of Exercise 2
@@ -86,12 +77,10 @@ def rts_by_targ_ecc(df):
     #### Programming Problem 2: 
     ####        Use the pandas "pivot_table" command to summarize data
     ####
-
-    # results = df.pivot_table( *** YOUR CODE HERE *** )
-
+    results = df.pivot_table(values= 'rts', index='targ_ecc') 
     return results
 
-
+## Plot behavioral variables that are sorted and grouped. 
 ##
 ## This function should be edited as part of Exercise 3
 ##
@@ -102,15 +91,19 @@ def plot_rts(df):
     ####
     #### Programming Problem 3: Use the pandas to create barchart of sorted rts
     ####
-
-    # df['side_name'] = ### YOUR CODE HERE
+    # 
+    df['side_name'] = np.choose(df['side'],['left','right'])
 
     # Now create a pivot table (specifying values, index, and columns)
-
+    pv_table = df.pivot_table(values='rts',index='targ_ecc',columns='side_name')
     # And now plot that pivot table
-
+    pv_table.plot(kind='bar')
     # And add plot details (title, legend, xlabel, and ylabel)
-
+    plt.title('Reation Times')
+    plt.ylabel('Reaction Times (in ms)')
+    plt.xlabel('Target Eccentricity')
+    #plt.legend(['Left','Right'],loc='upper left')
+    plt.show()
 ##
 ## This function should be edited as part of Exercise 4
 ##
@@ -124,17 +117,19 @@ def get_ems(df, trial):
     #### Programming Problem 4: 
     ####     Extract eye movement data for a single trial here
     ####
-
     #### Hints
-    ####  Remember that to get information about a given trial, you
+    ####  Remember that to get information about a given trial, your
     ####  will need to use that trial as part of the index.  For example,
     ####  to get the time the stimulus appeared on trial 14, you would write:
     ####    df['stimon'][14]
+    em_trial = df['em_time'][trial]
+    stimulus = df['stimon'][trial]
+    response = df['response'][trial]
 
-    # t = *** YOUR CODE HERE ***
-    # h = *** YOUR CODE HERE ***
-    # v = *** YOUR CODE HERE ***
-
+    # times of eye movement between stimulus and response 
+    t = em_trial[np.logical_and(em_trial>stimulus, em_trial<response)] 
+    h = df['em_horiz'][trial][np.logical_and(em_trial>stimulus, em_trial<response)] # horizontal positions 
+    v = df['em_vert'][trial][np.logical_and(em_trial>stimulus, em_trial<response)] # vertical positions 
     return t, h, v
 
 ##
@@ -152,11 +147,17 @@ def plot_ems_and_target(df, trial):
 
     t, h, v = get_ems(df, trial)
     # Can get information about target location here
+    x_pos = df['targ_x'][trial]
+    y_pos = df['targ_y'][trial]
 
     plt.figure()
-
-    # *** YOUR CODE HERE ***
-
+    plt.xlabel('Time (in msec)')
+    plt.ylabel('Position (in degrees visual angle)')
+    plt.plot(t, h, 'r', t, v, 'g')
+    plt.legend(['Horizontal', 'Vertical'])  
+    plt.axhline(x_pos, color='r') # x-pos of target
+    plt.axhline(y_pos, color='g') # y-pos of target
+    plt.ylim(-10, 10)
     plt.show()
     
 
@@ -164,7 +165,6 @@ def plot_ems_and_target(df, trial):
 ##
 ## This function should be edited as part of Exercise 5
 ##
-
 def get_rate(spk_times, start, stop):
     """Return the rate for a single set of spike times given 
     a spike counting interval of start to stop (inclusive)."""
@@ -173,12 +173,10 @@ def get_rate(spk_times, start, stop):
     #### Programming Problem 6: 
     ####    Get rate from list of spk_times and [start,stop) window
     ####
-
-    # rate = *** YOUR CODE HERE ***
+    # scale by ten to move from msec to seconds 
+    rate = 10 * len(spk_times[np.logical_and(spk_times >= start, spk_times <= stop )])
     # Remember that rate should be in the units spikes/sec
     # but start and stop are in msec (.001 sec)
-
-    # rate = 
 
     return rate
 
@@ -205,7 +203,6 @@ def add_aligned_rates(df, alignto, start, stop):
 
 
 ### NO NEED TO EDIT BELOW HERE (examine, if you wish!)
-
 #
 #  Code for finding the time the target was "looked at" (acquired)
 #    DO NOT EDIT, as this will affect your problem set, but you are
@@ -215,7 +212,6 @@ def add_aligned_rates(df, alignto, start, stop):
 #    we don't want to count that.  Only new "fixations" near the target are
 #    counted.
 #
-
 def contiguous_regions(condition):
     """Finds contiguous True regions of the boolean array "condition". Returns
     a 2D array where the first column is the start index of the region and the
@@ -265,3 +261,6 @@ def add_acq_time(df):
 # Code to run for testing if this module is run directly
 if __name__ == "__main__":
     df = load_data()
+    df = add_info(df)
+    plot_rts(df) # plot binned reaction time for the left and right sides 
+    plot_ems_and_target(df, 88)
