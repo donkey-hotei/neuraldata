@@ -1,5 +1,5 @@
-Solutions to Assignments from Brown's Exploring Neural Data course offered 
-over the Coursera platform. 
+Problem set solutions and notes for the Exploring Neural data course 
+offered by Brown Univerity.
 This course is an opprotunity to learn about neuroscience research and 
 explore questions related to how brains work. It is an intoductory level
 course that help the student understand real-life challenges faced by 
